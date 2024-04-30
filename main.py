@@ -1,5 +1,7 @@
 from datetime import datetime
+import os
 from pprint import pprint
+import dotenv
 import requests
 
 APP_VERSION = "8.48"
@@ -93,8 +95,9 @@ def logout():
 if __name__ == "__main__":
     # load user password token from environment variable
     dotenv.load_dotenv()
-    user = os.getenv("USER")
-    password = os.getenv("PASSWORD")
+
+    user = os.getenv("HUMANOS_USER")
+    password = os.getenv("HUMANOS_PASSWORD")
     firebase_token = os.getenv("FIREBASE_TOKEN")
 
     data = login(user, password, firebase_token)
@@ -104,8 +107,8 @@ if __name__ == "__main__":
         pprint(payslips)
         payslip = get_payslip(payslips['Data'][-1]["InstallmentID"])
         pprint(payslip)
-        pdf_name, pdf = get_payslip_pdf(payslips['Data'][-1]["InstallmentID"])
-        with open(pdf_name, "wb") as f:
+        _, pdf = get_payslip_pdf(payslips['Data'][-1]["InstallmentID"])
+        with open(f"Slip_{payslip['SlipDetail'][0]["PayDate"][:10]}.pdf", "wb") as f:
             f.write(pdf)
     except Exception as e:
         pprint(e)
